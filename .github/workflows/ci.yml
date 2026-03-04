@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: ["main", "feature-*"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install linters
+        run: |
+          npm init -y
+          npm install --save-dev eslint
+
+      - name: Configure ESLint (minimal)
+        run: |
+          cat > .eslintrc.json << 'EOF'
+          {
+            "env": { "browser": true, "es2021": true },
+            "extends": ["eslint:recommended"],
+            "parserOptions": { "ecmaVersion": "latest", "sourceType": "module" },
+            "rules": {}
+          }
+          EOF
+
+      - name: Lint JS
+        run: npx eslint script.js
+
+      - name: Basic sanity checks
+        run: |
+          test -f index.html
+          test -f style.css
+          test -f script.js
