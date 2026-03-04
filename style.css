@@ -7,6 +7,11 @@
   --calculator-bg: linear-gradient(170deg, rgba(255, 255, 255, 0.98), rgba(247, 252, 255, 0.94));
   --display-bg: linear-gradient(145deg, #f8fbff, #edf3f9);
   --display-border: #d9e3ef;
+  --copy-bg: #e6eefb;
+  --copy-border: #c5d6ef;
+  --copy-text: #2b486d;
+  --copy-success-bg: #daf6ee;
+  --copy-success-text: #0d7058;
   --memory-btn-bg: #eef5ff;
   --memory-btn-border: #c2d4ee;
   --memory-btn-text: #254062;
@@ -51,6 +56,11 @@ body[data-theme="dark"] {
   --calculator-bg: linear-gradient(170deg, rgba(23, 33, 50, 0.96), rgba(16, 25, 40, 0.96));
   --display-bg: linear-gradient(145deg, #1d2b43, #152236);
   --display-border: #334561;
+  --copy-bg: #2b3f5d;
+  --copy-border: #486489;
+  --copy-text: #d8e7ff;
+  --copy-success-bg: #20463f;
+  --copy-success-text: #8ff0d7;
   --memory-btn-bg: #22354e;
   --memory-btn-border: #466184;
   --memory-btn-text: #dbe9ff;
@@ -202,11 +212,32 @@ body {
 }
 
 .display-wrap {
+  position: relative;
   background: var(--display-bg);
   border: 1px solid var(--display-border);
   border-radius: 20px;
-  padding: 14px 16px;
+  padding: 14px 16px 12px;
   margin-bottom: 14px;
+}
+
+.result-copy {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: 1px solid var(--copy-border);
+  border-radius: 999px;
+  padding: 4px 9px;
+  background: var(--copy-bg);
+  color: var(--copy-text);
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.result-copy.is-success {
+  background: var(--copy-success-bg);
+  color: var(--copy-success-text);
 }
 
 .memory-bar {
@@ -236,6 +267,7 @@ body {
 
 .expression {
   margin: 0;
+  padding-right: 72px;
   color: var(--muted);
   font-size: 0.95rem;
   min-height: 22px;
@@ -425,6 +457,7 @@ body {
 .key:focus-visible,
 .mode-btn:focus-visible,
 .theme-toggle:focus-visible,
+.result-copy:focus-visible,
 .memory-btn:focus-visible,
 .history-clear:focus-visible,
 .history-item:focus-visible {

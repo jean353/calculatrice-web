@@ -19,6 +19,7 @@ const resultEl = document.querySelector(".result");
 const calculatorEl = document.querySelector(".calculator");
 const modeButtons = document.querySelectorAll(".mode-btn");
 const themeToggleButton = document.querySelector("[data-theme-toggle]");
+const copyResultButton = document.querySelector(".result-copy");
 const actionButtons = document.querySelectorAll("[data-action]");
 const historyListEl = document.querySelector("[data-history-list]");
 
@@ -30,6 +31,7 @@ let angleMode = "DEG";
 let theme = "light";
 let memoryValue = 0;
 let historyEntries = [];
+let copyFeedbackTimeout = null;
 
 const functionNames = ["sin", "cos", "tan", "log", "ln", "sqrt"];
 const TRIG_EPSILON = 1e-12;
@@ -126,6 +128,72 @@ function formatMemoryValue(value) {
     return formatResult(value);
   } catch (error) {
     return "0";
+  }
+}
+
+function resetCopyFeedback() {
+  if (!copyResultButton) {
+    return;
+  }
+
+  copyResultButton.classList.remove("is-success");
+  copyResultButton.textContent = "Copier";
+}
+
+function showCopyFeedback(success) {
+  if (!copyResultButton) {
+    return;
+  }
+
+  if (copyFeedbackTimeout) {
+    clearTimeout(copyFeedbackTimeout);
+  }
+
+  if (success) {
+    copyResultButton.classList.add("is-success");
+    copyResultButton.textContent = "Copie";
+  } else {
+    copyResultButton.classList.remove("is-success");
+    copyResultButton.textContent = "Echec";
+  }
+
+  copyFeedbackTimeout = setTimeout(() => {
+    resetCopyFeedback();
+    copyFeedbackTimeout = null;
+  }, 1200);
+}
+
+async function copyCurrentResult() {
+  if (lastResult === "Erreur") {
+    showCopyFeedback(false);
+    return;
+  }
+
+  const valueToCopy = lastResult;
+
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(valueToCopy);
+      showCopyFeedback(true);
+      return;
+    }
+  } catch (error) {
+    // Fallback below.
+  }
+
+  try {
+    const hiddenInput = document.createElement("textarea");
+    hiddenInput.value = valueToCopy;
+    hiddenInput.setAttribute("readonly", "");
+    hiddenInput.style.position = "absolute";
+    hiddenInput.style.left = "-9999px";
+    document.body.appendChild(hiddenInput);
+    hiddenInput.select();
+    const copied = document.execCommand("copy");
+    document.body.removeChild(hiddenInput);
+    showCopyFeedback(copied);
+  } catch (error) {
+    showCopyFeedback(false);
   }
 }
 
@@ -790,6 +858,11 @@ function executeAction(action, value, sourceButton) {
 
   if (action === "clear") {
     clearAll();
+    return;
+  }
+
+  if (action === "copy-result") {
+    copyCurrentResult();
     return;
   }
 
