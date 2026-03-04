@@ -18,6 +18,7 @@ const expressionEl = document.querySelector(".expression");
 const resultEl = document.querySelector(".result");
 const calculatorEl = document.querySelector(".calculator");
 const modeButtons = document.querySelectorAll(".mode-btn");
+const themeToggleButton = document.querySelector("[data-theme-toggle]");
 const keys = document.querySelectorAll(".key");
 
 let expression = "";
@@ -25,9 +26,11 @@ let lastResult = "0";
 let justCalculated = false;
 let scientificMode = false;
 let angleMode = "DEG";
+let theme = "light";
 
 const functionNames = ["sin", "cos", "tan", "log", "ln", "sqrt"];
 const TRIG_EPSILON = 1e-12;
+const THEME_STORAGE_KEY = "calculator-theme";
 
 function isOperator(token) {
   return token === "+" || token === "-" || token === "*" || token === "/" || token === "^";
@@ -51,6 +54,45 @@ function formatResult(value) {
   }
 
   return Number.isInteger(value) ? String(value) : String(Number(value.toFixed(10)));
+}
+
+function setTheme(nextTheme, shouldPersist) {
+  theme = nextTheme === "dark" ? "dark" : "light";
+  document.body.setAttribute("data-theme", theme);
+
+  if (themeToggleButton) {
+    const isDark = theme === "dark";
+    themeToggleButton.textContent = isDark ? "Light" : "Dark";
+    themeToggleButton.setAttribute("aria-label", isDark ? "Activer le mode clair" : "Activer le mode sombre");
+    themeToggleButton.setAttribute("aria-pressed", isDark ? "true" : "false");
+  }
+
+  if (shouldPersist) {
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, theme);
+    } catch (error) {
+      // Ignore storage failures in restricted environments.
+    }
+  }
+}
+
+function initializeTheme() {
+  let initialTheme = "light";
+
+  try {
+    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+    if (savedTheme === "dark" || savedTheme === "light") {
+      initialTheme = savedTheme;
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      initialTheme = "dark";
+    }
+  } catch (error) {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      initialTheme = "dark";
+    }
+  }
+
+  setTheme(initialTheme, false);
 }
 
 function normalizeForDisplay(expr) {
@@ -729,6 +771,12 @@ modeButtons.forEach((button) => {
   });
 });
 
+if (themeToggleButton) {
+  themeToggleButton.addEventListener("click", () => {
+    setTheme(theme === "dark" ? "light" : "dark", true);
+  });
+}
+
 keys.forEach((key) => {
   key.addEventListener("click", () => {
     handleAction(key);
@@ -737,3 +785,4 @@ keys.forEach((key) => {
 
 setMode("simple");
 clearAll();
+initializeTheme();
