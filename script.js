@@ -942,6 +942,13 @@ function executeAction(action, value, sourceButton) {
     return;
   }
 
+  if (action === "ans") {
+    if (lastResult !== "Erreur") {
+      appendLiteral(lastResult);
+    }
+    return;
+  }
+
   if (action === "memory-add") {
     const displayedValue = parseDisplayNumber();
     if (displayedValue !== null) {
