@@ -19,6 +19,7 @@ const resultEl = document.querySelector(".result");
 const calculatorEl = document.querySelector(".calculator");
 const modeButtons = document.querySelectorAll(".mode-btn");
 const themeToggleButton = document.querySelector("[data-theme-toggle]");
+const themeToggleLabel = document.querySelector(".theme-toggle-label");
 const copyResultButton = document.querySelector(".result-copy");
 const actionButtons = document.querySelectorAll("[data-action]");
 const historyListEl = document.querySelector("[data-history-list]");
@@ -87,9 +88,13 @@ function setTheme(nextTheme, shouldPersist) {
 
   if (themeToggleButton) {
     const isDark = theme === "dark";
-    themeToggleButton.textContent = isDark ? "Light" : "Dark";
+    themeToggleButton.setAttribute("data-theme-state", isDark ? "dark" : "light");
     themeToggleButton.setAttribute("aria-label", isDark ? "Activer le mode clair" : "Activer le mode sombre");
     themeToggleButton.setAttribute("aria-pressed", isDark ? "true" : "false");
+    themeToggleButton.setAttribute("title", isDark ? "Passer en mode clair" : "Passer en mode sombre");
+    if (themeToggleLabel) {
+      themeToggleLabel.textContent = isDark ? "Passer en mode clair" : "Passer en mode sombre";
+    }
   }
 
   if (shouldPersist) {
