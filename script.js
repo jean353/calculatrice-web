@@ -1,4 +1,4 @@
-function add(a, b) {
+﻿function add(a, b) {
   return Number(a) + Number(b);
 }
 
@@ -27,6 +27,7 @@ let scientificMode = false;
 let angleMode = "DEG";
 
 const functionNames = ["sin", "cos", "tan", "log", "ln", "sqrt"];
+const TRIG_EPSILON = 1e-12;
 
 function isOperator(token) {
   return token === "+" || token === "-" || token === "*" || token === "/" || token === "^";
@@ -35,6 +36,10 @@ function isOperator(token) {
 function formatResult(value) {
   if (!Number.isFinite(value)) {
     throw new Error("Calcul impossible");
+  }
+
+  if (Math.abs(value) < TRIG_EPSILON) {
+    value = 0;
   }
 
   if (Object.is(value, -0)) {
@@ -56,7 +61,7 @@ function normalizeForDisplay(expr) {
   return expr
     .replace(/PI/g, "pi")
     .replace(/\*/g, "x")
-    .replace(/\//g, "�")
+    .replace(/\//g, "÷")
     .replace(/\^/g, "^");
 }
 
@@ -474,17 +479,30 @@ function toRpn(tokens) {
 }
 
 function applyFunction(name, value) {
+  function normalizeTrigValue(raw) {
+    if (Math.abs(raw) < TRIG_EPSILON) {
+      return 0;
+    }
+    if (Math.abs(raw - 1) < TRIG_EPSILON) {
+      return 1;
+    }
+    if (Math.abs(raw + 1) < TRIG_EPSILON) {
+      return -1;
+    }
+    return raw;
+  }
+
   if (name === "sin") {
     const angle = angleMode === "DEG" ? (value * Math.PI) / 180 : value;
-    return Math.sin(angle);
+    return normalizeTrigValue(Math.sin(angle));
   }
   if (name === "cos") {
     const angle = angleMode === "DEG" ? (value * Math.PI) / 180 : value;
-    return Math.cos(angle);
+    return normalizeTrigValue(Math.cos(angle));
   }
   if (name === "tan") {
     const angle = angleMode === "DEG" ? (value * Math.PI) / 180 : value;
-    return Math.tan(angle);
+    return normalizeTrigValue(Math.tan(angle));
   }
   if (name === "log") {
     if (value <= 0) {
