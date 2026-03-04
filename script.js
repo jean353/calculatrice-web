@@ -22,6 +22,8 @@ const themeToggleButton = document.querySelector("[data-theme-toggle]");
 const copyResultButton = document.querySelector(".result-copy");
 const actionButtons = document.querySelectorAll("[data-action]");
 const historyListEl = document.querySelector("[data-history-list]");
+const historyDrawerEl = document.querySelector("[data-history-drawer]");
+const historyOverlayEl = document.querySelector(".history-overlay");
 
 let expression = "";
 let lastResult = "0";
@@ -32,6 +34,7 @@ let theme = "light";
 let memoryValue = 0;
 let historyEntries = [];
 let copyFeedbackTimeout = null;
+let historyOpen = false;
 
 const functionNames = ["sin", "cos", "tan", "asin", "acos", "atan", "log", "ln", "sqrt", "fact"];
 const TRIG_EPSILON = 1e-12;
@@ -285,6 +288,22 @@ function addHistoryEntry(rawExpression, rawResult) {
     ...historyEntries
   ].slice(0, MAX_HISTORY_ENTRIES);
   renderHistory();
+}
+
+function setHistoryOpen(nextOpen) {
+  historyOpen = Boolean(nextOpen);
+
+  if (historyDrawerEl) {
+    historyDrawerEl.classList.toggle("is-open", historyOpen);
+    historyDrawerEl.setAttribute("aria-hidden", historyOpen ? "false" : "true");
+  }
+
+  if (historyOverlayEl) {
+    historyOverlayEl.classList.toggle("is-open", historyOpen);
+    historyOverlayEl.setAttribute("aria-hidden", historyOpen ? "false" : "true");
+  }
+
+  document.body.classList.toggle("history-open", historyOpen);
 }
 
 function clearAll() {
@@ -926,6 +945,16 @@ function executeAction(action, value, sourceButton) {
     return;
   }
 
+  if (action === "history-toggle") {
+    setHistoryOpen(!historyOpen);
+    return;
+  }
+
+  if (action === "history-close") {
+    setHistoryOpen(false);
+    return;
+  }
+
   if (action === "history-clear") {
     historyEntries = [];
     renderHistory();
@@ -1109,7 +1138,17 @@ function handleKeyboardInput(event) {
     return;
   }
 
-  if (key === "Delete" || key === "Escape") {
+  if (key === "Escape") {
+    event.preventDefault();
+    if (historyOpen) {
+      setHistoryOpen(false);
+    } else {
+      executeAction("clear");
+    }
+    return;
+  }
+
+  if (key === "Delete") {
     event.preventDefault();
     executeAction("clear");
     return;
@@ -1228,6 +1267,7 @@ if (historyListEl) {
     lastResult = selectedEntry.result;
     justCalculated = true;
     updateDisplay(lastResult);
+    setHistoryOpen(false);
   });
 }
 
@@ -1237,3 +1277,4 @@ setMode("simple");
 clearAll();
 initializeTheme();
 renderHistory();
+setHistoryOpen(false);

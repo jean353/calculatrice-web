@@ -43,6 +43,10 @@
   --theme-toggle-bg: #f4f8ff;
   --theme-toggle-border: #d7e2f4;
   --theme-toggle-text: #2f4868;
+  --history-toggle-bg: #f4f8ff;
+  --history-toggle-border: #d7e2f4;
+  --history-toggle-text: #2f4868;
+  --overlay: rgba(9, 16, 27, 0.42);
   --shadow: 0 24px 60px rgba(18, 35, 59, 0.18);
   --shadow-scientific: 0 24px 70px rgba(67, 31, 107, 0.23);
 }
@@ -91,6 +95,10 @@ body[data-theme="dark"] {
   --theme-toggle-bg: #1e2d45;
   --theme-toggle-border: #3b5274;
   --theme-toggle-text: #d6e5ff;
+  --history-toggle-bg: #1e2d45;
+  --history-toggle-border: #3b5274;
+  --history-toggle-text: #d6e5ff;
+  --overlay: rgba(4, 8, 16, 0.62);
   --shadow: 0 28px 70px rgba(0, 0, 0, 0.45);
   --shadow-scientific: 0 28px 78px rgba(68, 31, 108, 0.45);
 }
@@ -108,6 +116,10 @@ body {
     radial-gradient(720px 420px at 14% 12%, rgba(255, 255, 255, 0.9), transparent 60%),
     radial-gradient(680px 420px at 88% 84%, rgba(15, 157, 122, 0.18), transparent 60%),
     linear-gradient(160deg, var(--bg-top), var(--bg-bottom));
+}
+
+body.history-open {
+  overflow: hidden;
 }
 
 .scene {
@@ -206,6 +218,20 @@ body {
   transition: transform 180ms ease, filter 180ms ease, border-color 180ms ease;
 }
 
+.history-toggle {
+  border: 1px solid var(--history-toggle-border);
+  border-radius: 999px;
+  padding: 8px 12px;
+  background: var(--history-toggle-bg);
+  color: var(--history-toggle-text);
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.79rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 180ms ease, filter 180ms ease, border-color 180ms ease;
+}
+
+.history-toggle:hover,
 .theme-toggle:hover {
   transform: translateY(-1px);
   filter: brightness(1.06);
@@ -300,11 +326,11 @@ body {
   overflow: hidden;
   transform: translateY(-8px);
   pointer-events: none;
-  transition: max-height 280ms ease, opacity 220ms ease, transform 240ms ease;
+  transition: max-height 320ms ease, opacity 220ms ease, transform 240ms ease;
 }
 
 .calculator[data-mode="scientific"] .scientific-keys {
-  max-height: 300px;
+  max-height: 800px;
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
@@ -373,12 +399,42 @@ body {
   line-height: 0;
 }
 
-.history-panel {
-  margin-top: 12px;
-  border: 1px solid var(--history-border);
-  border-radius: 14px;
-  background: var(--history-bg);
-  padding: 10px;
+.history-overlay {
+  position: fixed;
+  inset: 0;
+  border: 0;
+  background: var(--overlay);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease;
+  z-index: 40;
+}
+
+.history-overlay.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.history-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100dvh;
+  width: min(430px, 100%);
+  background: var(--calculator-bg);
+  border-left: 1px solid var(--history-border);
+  box-shadow: -16px 0 32px rgba(0, 0, 0, 0.2);
+  padding: 16px;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 10px;
+  transform: translateX(100%);
+  transition: transform 260ms ease;
+  z-index: 50;
+}
+
+.history-drawer.is-open {
+  transform: translateX(0);
 }
 
 .history-header {
@@ -398,7 +454,24 @@ body {
   color: var(--muted);
 }
 
+.history-actions {
+  display: flex;
+  gap: 6px;
+}
+
 .history-clear {
+  border: 1px solid var(--memory-btn-border);
+  border-radius: 999px;
+  padding: 5px 10px;
+  background: var(--memory-btn-bg);
+  color: var(--memory-btn-text);
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.history-close {
   border: 1px solid var(--memory-btn-border);
   border-radius: 999px;
   padding: 5px 10px;
@@ -414,7 +487,7 @@ body {
   margin: 0;
   padding: 0;
   list-style: none;
-  max-height: 170px;
+  max-height: none;
   overflow: auto;
   display: grid;
   gap: 6px;
@@ -457,9 +530,11 @@ body {
 .key:focus-visible,
 .mode-btn:focus-visible,
 .theme-toggle:focus-visible,
+.history-toggle:focus-visible,
 .result-copy:focus-visible,
 .memory-btn:focus-visible,
 .history-clear:focus-visible,
+.history-close:focus-visible,
 .history-item:focus-visible {
   outline: 3px solid var(--focus-ring);
   outline-offset: 2px;
@@ -500,6 +575,7 @@ body {
   .header-controls {
     width: 100%;
     justify-content: space-between;
+    flex-wrap: wrap;
   }
 
   .result {
@@ -509,5 +585,9 @@ body {
   .key {
     border-radius: 12px;
     padding: 12px 8px;
+  }
+
+  .history-drawer {
+    width: 100%;
   }
 }

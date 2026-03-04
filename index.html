@@ -22,6 +22,9 @@
             <button class="mode-btn is-active" type="button" data-mode-target="simple">Simple</button>
             <button class="mode-btn" type="button" data-mode-target="scientific">Scientifique</button>
           </div>
+          <button class="history-toggle" type="button" data-action="history-toggle" aria-label="Afficher l'historique">
+            Historique
+          </button>
           <button class="theme-toggle" type="button" aria-label="Activer le mode sombre" data-theme-toggle>
             Dark
           </button>
@@ -98,16 +101,19 @@
         <button class="key" type="button" data-action="dot">.</button>
         <button class="key key-eq" type="button" data-action="equals">=</button>
       </div>
-
-      <section class="history-panel" aria-label="Historique des calculs">
-        <div class="history-header">
-          <p>Historique</p>
-          <button class="history-clear" type="button" data-action="history-clear">Vider</button>
-        </div>
-        <ul class="history-list" data-history-list></ul>
-      </section>
     </section>
   </main>
+  <button class="history-overlay" type="button" data-action="history-close" aria-label="Fermer l'historique"></button>
+  <aside class="history-drawer" aria-label="Historique des calculs" aria-hidden="true" data-history-drawer>
+    <div class="history-header">
+      <p>Historique</p>
+      <div class="history-actions">
+        <button class="history-clear" type="button" data-action="history-clear">Vider</button>
+        <button class="history-close" type="button" data-action="history-close">Fermer</button>
+      </div>
+    </div>
+    <ul class="history-list" data-history-list></ul>
+  </aside>
 
   <script src="script.js"></script>
 </body>
