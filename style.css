@@ -157,14 +157,6 @@ body {
   pointer-events: auto;
 }
 
-.calculator[data-mode="scientific"] .basic-keys {
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-}
-
-.calculator[data-mode="scientific"] .key-eq {
-  grid-row: span 2;
-}
-
 .calculator[data-mode="scientific"] .key-zero {
   grid-column: span 2;
 }
@@ -217,6 +209,11 @@ body {
   grid-column: span 2;
 }
 
+.key sup {
+  font-size: 0.68em;
+  line-height: 0;
+}
+
 @keyframes rise {
   from {
     opacity: 0;
@@ -231,14 +228,6 @@ body {
 @media (max-width: 760px) {
   .calculator[data-mode="scientific"] {
     width: min(100%, 430px);
-  }
-
-  .calculator[data-mode="scientific"] .basic-keys {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-  .calculator[data-mode="scientific"] .key-eq {
-    grid-row: auto;
   }
 }
 
