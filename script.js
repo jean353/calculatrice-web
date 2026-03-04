@@ -33,7 +33,7 @@ let memoryValue = 0;
 let historyEntries = [];
 let copyFeedbackTimeout = null;
 
-const functionNames = ["sin", "cos", "tan", "log", "ln", "sqrt"];
+const functionNames = ["sin", "cos", "tan", "asin", "acos", "atan", "log", "ln", "sqrt"];
 const TRIG_EPSILON = 1e-12;
 const THEME_STORAGE_KEY = "calculator-theme";
 const MAX_HISTORY_ENTRIES = 16;
@@ -706,6 +706,24 @@ function applyFunction(name, value) {
     }
     return normalizeTrigValue(Math.tan(angle));
   }
+  if (name === "asin") {
+    if (value < -1 || value > 1) {
+      throw new Error("Domaine invalide");
+    }
+    const angle = Math.asin(value);
+    return angleMode === "DEG" ? (angle * 180) / Math.PI : angle;
+  }
+  if (name === "acos") {
+    if (value < -1 || value > 1) {
+      throw new Error("Domaine invalide");
+    }
+    const angle = Math.acos(value);
+    return angleMode === "DEG" ? (angle * 180) / Math.PI : angle;
+  }
+  if (name === "atan") {
+    const angle = Math.atan(value);
+    return angleMode === "DEG" ? (angle * 180) / Math.PI : angle;
+  }
   if (name === "log") {
     if (value <= 0) {
       throw new Error("Domaine invalide");
@@ -1060,6 +1078,15 @@ function handleKeyboardInput(event) {
   if (lowered === "s") {
     event.preventDefault();
     executeAction("func", "sin");
+  } else if (lowered === "a") {
+    event.preventDefault();
+    executeAction("func", "asin");
+  } else if (lowered === "b") {
+    event.preventDefault();
+    executeAction("func", "acos");
+  } else if (lowered === "n") {
+    event.preventDefault();
+    executeAction("func", "atan");
   } else if (lowered === "c") {
     event.preventDefault();
     executeAction("func", "cos");
