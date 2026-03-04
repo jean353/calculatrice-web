@@ -49,6 +49,38 @@ function isOperator(token) {
   return token === "+" || token === "-" || token === "*" || token === "/" || token === "^" || token === "C" || token === "P";
 }
 
+function isErrorResult(value) {
+  return typeof value === "string" && value.startsWith("Erreur");
+}
+
+function getUserErrorMessage(error) {
+  const message = error && typeof error.message === "string" ? error.message : "";
+
+  if (message === "Domaine invalide") {
+    return "Erreur: valeur hors domaine";
+  }
+  if (message === "Calcul impossible") {
+    return "Erreur: resultat non calculable";
+  }
+  if (message === "Expression invalide") {
+    return "Erreur: expression invalide";
+  }
+  if (message === "Parentheses invalides") {
+    return "Erreur: parentheses non equilibrees";
+  }
+  if (message === "Nombre invalide") {
+    return "Erreur: nombre invalide";
+  }
+  if (message === "Fonction inconnue") {
+    return "Erreur: fonction non reconnue";
+  }
+  if (message === "Operateur invalide") {
+    return "Erreur: operateur invalide";
+  }
+
+  return "Erreur: calcul invalide";
+}
+
 function formatResult(value) {
   if (!Number.isFinite(value)) {
     throw new Error("Calcul impossible");
@@ -193,7 +225,7 @@ function showCopyFeedback(success) {
 }
 
 async function copyCurrentResult() {
-  if (lastResult === "Erreur") {
+  if (isErrorResult(lastResult)) {
     showCopyFeedback(false);
     return;
   }
@@ -914,10 +946,9 @@ function calculate() {
     updateDisplay(formatted);
     addHistoryEntry(expressionBeforeCalc, formatted);
   } catch (error) {
-    expression = "";
-    lastResult = "Erreur";
+    lastResult = getUserErrorMessage(error);
     justCalculated = false;
-    updateDisplay("Erreur");
+    updateDisplay(lastResult);
   }
 }
 
@@ -1012,7 +1043,7 @@ function executeAction(action, value, sourceButton) {
   }
 
   if (action === "ans") {
-    if (lastResult !== "Erreur") {
+    if (!isErrorResult(lastResult)) {
       appendLiteral(lastResult);
     }
     return;
