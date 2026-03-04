@@ -33,13 +33,13 @@ let memoryValue = 0;
 let historyEntries = [];
 let copyFeedbackTimeout = null;
 
-const functionNames = ["sin", "cos", "tan", "asin", "acos", "atan", "log", "ln", "sqrt"];
+const functionNames = ["sin", "cos", "tan", "asin", "acos", "atan", "log", "ln", "sqrt", "fact"];
 const TRIG_EPSILON = 1e-12;
 const THEME_STORAGE_KEY = "calculator-theme";
 const MAX_HISTORY_ENTRIES = 16;
 
 function isOperator(token) {
-  return token === "+" || token === "-" || token === "*" || token === "/" || token === "^";
+  return token === "+" || token === "-" || token === "*" || token === "/" || token === "^" || token === "C" || token === "P";
 }
 
 function formatResult(value) {
@@ -60,6 +60,22 @@ function formatResult(value) {
   }
 
   return Number.isInteger(value) ? String(value) : String(Number(value.toFixed(10)));
+}
+
+function computeFactorial(value) {
+  if (!Number.isInteger(value) || value < 0) {
+    throw new Error("Domaine invalide");
+  }
+
+  if (value > 170) {
+    throw new Error("Calcul impossible");
+  }
+
+  let result = 1;
+  for (let i = 2; i <= value; i += 1) {
+    result *= i;
+  }
+  return result;
 }
 
 function setTheme(nextTheme, shouldPersist) {
@@ -108,6 +124,8 @@ function normalizeForDisplay(expr) {
 
   return expr
     .replace(/PI/g, "pi")
+    .replace(/C/g, " nCr ")
+    .replace(/P/g, " nPr ")
     .replace(/\*/g, "x")
     .replace(/\//g, "÷")
     .replace(/\^/g, "^");
@@ -501,6 +519,13 @@ function applySquare() {
   }
 }
 
+function applyFactorial() {
+  const changed = wrapCurrentToken("fact(", ")");
+  if (changed) {
+    updateDisplay(lastResult);
+  }
+}
+
 function applyInverse() {
   const changed = wrapCurrentToken("1/(", ")");
   if (changed) {
@@ -560,6 +585,8 @@ function tokenize(expr) {
         tokens.push({ type: "number", value: Math.PI });
       } else if (identifier === "E") {
         tokens.push({ type: "number", value: Math.E });
+      } else if (identifier === "C" || identifier === "P") {
+        tokens.push({ type: "operator", value: identifier });
       } else if (functionNames.includes(identifier)) {
         tokens.push({ type: "function", value: identifier });
       } else {
@@ -589,7 +616,7 @@ function tokenize(expr) {
 function toRpn(tokens) {
   const output = [];
   const stack = [];
-  const precedence = { "+": 1, "-": 1, "*": 2, "/": 2, "^": 3, "u-": 4 };
+  const precedence = { "+": 1, "-": 1, "*": 2, "/": 2, "C": 2, "P": 2, "^": 3, "u-": 4 };
   const rightAssociative = new Set(["^", "u-"]);
 
   for (let i = 0; i < tokens.length; i += 1) {
@@ -742,6 +769,9 @@ function applyFunction(name, value) {
     }
     return Math.sqrt(value);
   }
+  if (name === "fact") {
+    return computeFactorial(value);
+  }
 
   throw new Error("Fonction inconnue");
 }
@@ -788,6 +818,18 @@ function evaluateRpn(rpn) {
         stack.push(mult(left, right));
       } else if (token.value === "/") {
         stack.push(div(left, right));
+      } else if (token.value === "C") {
+        if (!Number.isInteger(left) || !Number.isInteger(right) || left < 0 || right < 0 || right > left) {
+          throw new Error("Domaine invalide");
+        }
+        const numerator = computeFactorial(left);
+        const denominator = computeFactorial(right) * computeFactorial(left - right);
+        stack.push(div(numerator, denominator));
+      } else if (token.value === "P") {
+        if (!Number.isInteger(left) || !Number.isInteger(right) || left < 0 || right < 0 || right > left) {
+          throw new Error("Domaine invalide");
+        }
+        stack.push(div(computeFactorial(left), computeFactorial(left - right)));
       } else if (token.value === "^") {
         stack.push(Math.pow(left, right));
       } else {
@@ -976,6 +1018,21 @@ function executeAction(action, value, sourceButton) {
     return;
   }
 
+  if (action === "factorial") {
+    applyFactorial();
+    return;
+  }
+
+  if (action === "ncr") {
+    appendOperator("C");
+    return;
+  }
+
+  if (action === "npr") {
+    appendOperator("P");
+    return;
+  }
+
   if (action === "inv") {
     applyInverse();
     return;
@@ -1078,6 +1135,9 @@ function handleKeyboardInput(event) {
   if (lowered === "s") {
     event.preventDefault();
     executeAction("func", "sin");
+  } else if (key === "!") {
+    event.preventDefault();
+    executeAction("factorial");
   } else if (lowered === "a") {
     event.preventDefault();
     executeAction("func", "asin");
@@ -1111,6 +1171,12 @@ function handleKeyboardInput(event) {
   } else if (lowered === "i") {
     event.preventDefault();
     executeAction("inv");
+  } else if (lowered === "h") {
+    event.preventDefault();
+    executeAction("ncr");
+  } else if (lowered === "j") {
+    event.preventDefault();
+    executeAction("npr");
   } else if (lowered === "q") {
     event.preventDefault();
     executeAction("pow2");
