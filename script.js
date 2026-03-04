@@ -682,8 +682,20 @@ function toggleAngleMode(button) {
   button.textContent = angleMode;
 }
 
-function handleAction(button) {
-  const { action, value } = button.dataset;
+function toggleAngleModeFromKeyboard() {
+  const degButton = document.querySelector('.key[data-action="deg"]');
+  if (degButton) {
+    toggleAngleMode(degButton);
+    return;
+  }
+
+  angleMode = angleMode === "DEG" ? "RAD" : "DEG";
+}
+
+function executeAction(action, value, sourceButton) {
+  if (!action) {
+    return;
+  }
 
   if (action === "clear") {
     clearAll();
@@ -756,12 +768,132 @@ function handleAction(button) {
   }
 
   if (action === "deg") {
-    toggleAngleMode(button);
+    if (sourceButton) {
+      toggleAngleMode(sourceButton);
+    } else {
+      toggleAngleModeFromKeyboard();
+    }
     return;
   }
 
   if (action === "equals") {
     calculate();
+  }
+}
+
+function handleAction(button) {
+  const { action, value } = button.dataset;
+  executeAction(action, value, button);
+}
+
+function handleKeyboardInput(event) {
+  if (event.ctrlKey || event.altKey || event.metaKey) {
+    return;
+  }
+
+  const targetTag = event.target && event.target.tagName ? event.target.tagName.toLowerCase() : "";
+  const isEditable = targetTag === "input" || targetTag === "textarea" || targetTag === "select"
+    || (event.target && event.target.isContentEditable);
+
+  if (isEditable) {
+    return;
+  }
+
+  const { key } = event;
+
+  if (/^\d$/.test(key)) {
+    event.preventDefault();
+    executeAction("digit", key);
+    return;
+  }
+
+  if (key === "." || key === ",") {
+    event.preventDefault();
+    executeAction("dot");
+    return;
+  }
+
+  if (key === "+" || key === "-" || key === "*" || key === "/" || key === "^") {
+    event.preventDefault();
+    executeAction("op", key);
+    return;
+  }
+
+  if (key === "Enter" || key === "=") {
+    event.preventDefault();
+    executeAction("equals");
+    return;
+  }
+
+  if (key === "Backspace") {
+    event.preventDefault();
+    executeAction("backspace");
+    return;
+  }
+
+  if (key === "Delete" || key === "Escape") {
+    event.preventDefault();
+    executeAction("clear");
+    return;
+  }
+
+  if (key === "(") {
+    event.preventDefault();
+    executeAction("left-paren");
+    return;
+  }
+
+  if (key === ")") {
+    event.preventDefault();
+    executeAction("right-paren");
+    return;
+  }
+
+  if (key === "%") {
+    event.preventDefault();
+    executeAction("percent");
+    return;
+  }
+
+  if (!scientificMode) {
+    return;
+  }
+
+  const lowered = key.toLowerCase();
+
+  if (lowered === "s") {
+    event.preventDefault();
+    executeAction("func", "sin");
+  } else if (lowered === "c") {
+    event.preventDefault();
+    executeAction("func", "cos");
+  } else if (lowered === "t") {
+    event.preventDefault();
+    executeAction("func", "tan");
+  } else if (lowered === "l") {
+    event.preventDefault();
+    executeAction("func", "ln");
+  } else if (lowered === "g") {
+    event.preventDefault();
+    executeAction("func", "log");
+  } else if (lowered === "r") {
+    event.preventDefault();
+    executeAction("sqrt");
+  } else if (lowered === "p") {
+    event.preventDefault();
+    executeAction("const", "PI");
+  } else if (lowered === "e") {
+    event.preventDefault();
+    executeAction("const", "E");
+  } else if (lowered === "i") {
+    event.preventDefault();
+    executeAction("inv");
+  } else if (lowered === "q") {
+    event.preventDefault();
+    executeAction("pow2");
+  } else if (lowered === "d") {
+    event.preventDefault();
+    executeAction("deg");
   }
 }
 
@@ -782,6 +914,8 @@ keys.forEach((key) => {
     handleAction(key);
   });
 });
+
+document.addEventListener("keydown", handleKeyboardInput);
 
 setMode("simple");
 clearAll();
