@@ -11,41 +11,68 @@
 </head>
 <body>
   <main class="scene">
-    <section class="calculator" aria-label="Calculatrice simple">
+    <section class="calculator" aria-label="Calculatrice" data-mode="simple">
       <header class="calc-header">
-        <p class="calc-kicker">Calculatrice</p>
-        <h1>Simple, rapide, claire</h1>
+        <div>
+          <p class="calc-kicker">Calculatrice</p>
+          <h1>Simple et Scientifique</h1>
+        </div>
+        <div class="mode-switch" role="group" aria-label="Choix du mode">
+          <button class="mode-btn is-active" type="button" data-mode-target="simple">Simple</button>
+          <button class="mode-btn" type="button" data-mode-target="scientific">Scientifique</button>
+        </div>
       </header>
 
       <div class="display-wrap" role="status" aria-live="polite">
-        <p class="expression">12 + 8</p>
-        <p class="result">20</p>
+        <p class="expression">0</p>
+        <p class="result">0</p>
       </div>
 
-      <div class="keys" aria-label="Touches de calculatrice">
-        <button class="key key-soft" type="button">AC</button>
-        <button class="key key-soft" type="button">+/-</button>
-        <button class="key key-soft" type="button">%</button>
-        <button class="key key-op" type="button">/</button>
+      <div class="keys scientific-keys" aria-label="Touches scientifiques">
+        <button class="key key-sci" type="button" data-action="func" data-value="sin">sin</button>
+        <button class="key key-sci" type="button" data-action="func" data-value="cos">cos</button>
+        <button class="key key-sci" type="button" data-action="func" data-value="tan">tan</button>
+        <button class="key key-sci" type="button" data-action="deg">DEG</button>
 
-        <button class="key" type="button">7</button>
-        <button class="key" type="button">8</button>
-        <button class="key" type="button">9</button>
-        <button class="key key-op" type="button">*</button>
+        <button class="key key-sci" type="button" data-action="func" data-value="ln">ln</button>
+        <button class="key key-sci" type="button" data-action="func" data-value="log">log</button>
+        <button class="key key-sci" type="button" data-action="sqrt">sqrt</button>
+        <button class="key key-sci" type="button" data-action="pow2">x²</button>
 
-        <button class="key" type="button">4</button>
-        <button class="key" type="button">5</button>
-        <button class="key" type="button">6</button>
-        <button class="key key-op" type="button">-</button>
+        <button class="key key-sci" type="button" data-action="left-paren">(</button>
+        <button class="key key-sci" type="button" data-action="right-paren">)</button>
+        <button class="key key-sci" type="button" data-action="const" data-value="PI">pi</button>
+        <button class="key key-sci" type="button" data-action="const" data-value="E">e</button>
 
-        <button class="key" type="button">1</button>
-        <button class="key" type="button">2</button>
-        <button class="key" type="button">3</button>
-        <button class="key key-op" type="button">+</button>
+        <button class="key key-sci" type="button" data-action="inv">1/x</button>
+        <button class="key key-sci" type="button" data-action="op" data-value="^">x?</button>
+        <button class="key key-sci" type="button" data-action="backspace">DEL</button>
+        <button class="key key-soft" type="button" data-action="percent">%</button>
+      </div>
 
-        <button class="key key-zero" type="button">0</button>
-        <button class="key" type="button">.</button>
-        <button class="key key-eq" type="button">=</button>
+      <div class="keys basic-keys" aria-label="Touches principales">
+        <button class="key key-soft" type="button" data-action="clear">AC</button>
+        <button class="key key-soft" type="button" data-action="toggle-sign">+/-</button>
+        <button class="key key-op" type="button" data-action="op" data-value="/">/</button>
+        <button class="key key-op" type="button" data-action="op" data-value="*">*</button>
+
+        <button class="key" type="button" data-action="digit" data-value="7">7</button>
+        <button class="key" type="button" data-action="digit" data-value="8">8</button>
+        <button class="key" type="button" data-action="digit" data-value="9">9</button>
+        <button class="key key-op" type="button" data-action="op" data-value="-">-</button>
+
+        <button class="key" type="button" data-action="digit" data-value="4">4</button>
+        <button class="key" type="button" data-action="digit" data-value="5">5</button>
+        <button class="key" type="button" data-action="digit" data-value="6">6</button>
+        <button class="key key-op" type="button" data-action="op" data-value="+">+</button>
+
+        <button class="key" type="button" data-action="digit" data-value="1">1</button>
+        <button class="key" type="button" data-action="digit" data-value="2">2</button>
+        <button class="key" type="button" data-action="digit" data-value="3">3</button>
+        <button class="key key-eq" type="button" data-action="equals">=</button>
+
+        <button class="key key-zero" type="button" data-action="digit" data-value="0">0</button>
+        <button class="key" type="button" data-action="dot">.</button>
       </div>
     </section>
   </main>

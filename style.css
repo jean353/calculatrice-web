@@ -1,15 +1,16 @@
 :root {
-  --bg-top: #f0f4ff;
-  --bg-bottom: #d8e8ff;
-  --panel: #fdfefe;
-  --panel-edge: #d8dee9;
-  --text: #132238;
-  --muted: #607289;
+  --bg-top: #f0f6ff;
+  --bg-bottom: #d4e5ff;
+  --panel-edge: #d5dfef;
+  --text: #12233b;
+  --muted: #5b6f87;
   --key: #ffffff;
-  --key-soft: #eef3fa;
-  --key-op: #eaf6f2;
+  --key-soft: #edf4ff;
+  --key-op: #e6f7f1;
+  --key-sci: #f8edff;
   --key-eq: #0f9d7a;
-  --shadow: 0 24px 60px rgba(19, 34, 56, 0.18);
+  --shadow: 0 24px 60px rgba(18, 35, 59, 0.18);
+  --shadow-scientific: 0 24px 70px rgba(67, 31, 107, 0.23);
 }
 
 * {
@@ -22,8 +23,8 @@ body {
   font-family: "Manrope", "Segoe UI", sans-serif;
   color: var(--text);
   background:
-    radial-gradient(700px 420px at 12% 16%, rgba(255, 255, 255, 0.82), transparent 60%),
-    radial-gradient(640px 380px at 88% 84%, rgba(15, 157, 122, 0.2), transparent 55%),
+    radial-gradient(720px 420px at 14% 12%, rgba(255, 255, 255, 0.9), transparent 60%),
+    radial-gradient(680px 420px at 88% 84%, rgba(15, 157, 122, 0.18), transparent 60%),
     linear-gradient(160deg, var(--bg-top), var(--bg-bottom));
 }
 
@@ -31,20 +32,31 @@ body {
   min-height: 100vh;
   display: grid;
   place-items: center;
-  padding: 28px;
+  padding: 26px;
 }
 
 .calculator {
-  width: min(100%, 390px);
-  background: linear-gradient(170deg, rgba(255, 255, 255, 0.97), rgba(248, 252, 255, 0.94));
+  width: min(100%, 420px);
+  background: linear-gradient(170deg, rgba(255, 255, 255, 0.98), rgba(247, 252, 255, 0.94));
   border: 1px solid var(--panel-edge);
   border-radius: 28px;
-  padding: 22px;
+  padding: 20px;
   box-shadow: var(--shadow);
+  transition: width 260ms ease, box-shadow 260ms ease, border-color 260ms ease, transform 260ms ease;
   animation: rise 500ms ease-out both;
 }
 
+.calculator[data-mode="scientific"] {
+  width: min(100%, 620px);
+  border-color: #ccb7e4;
+  box-shadow: var(--shadow-scientific);
+}
+
 .calc-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
   margin-bottom: 14px;
 }
 
@@ -52,29 +64,61 @@ body {
   margin: 0 0 6px;
   font-family: "Space Grotesk", sans-serif;
   font-size: 0.74rem;
-  letter-spacing: 0.13em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--muted);
 }
 
 .calc-header h1 {
   margin: 0;
-  font-size: 1.15rem;
+  font-size: 1.18rem;
   font-weight: 800;
 }
 
+.mode-switch {
+  display: inline-flex;
+  background: #edf3fd;
+  border: 1px solid #d7e2f4;
+  border-radius: 999px;
+  padding: 3px;
+}
+
+.mode-btn {
+  border: 0;
+  border-radius: 999px;
+  padding: 8px 12px;
+  background: transparent;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.79rem;
+  font-weight: 700;
+  color: #4c6280;
+  cursor: pointer;
+  transition: background 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.mode-btn.is-active {
+  background: #12233b;
+  color: #fff;
+}
+
+.calculator[data-mode="scientific"] .mode-btn.is-active {
+  background: #632e98;
+}
+
 .display-wrap {
-  background: linear-gradient(145deg, #f7fbff, #edf3f9);
+  background: linear-gradient(145deg, #f8fbff, #edf3f9);
   border: 1px solid #d9e3ef;
   border-radius: 20px;
   padding: 14px 16px;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .expression {
   margin: 0;
   color: var(--muted);
   font-size: 0.95rem;
+  min-height: 22px;
+  word-break: break-all;
 }
 
 .result {
@@ -83,36 +127,70 @@ body {
   font-size: 2rem;
   font-weight: 800;
   letter-spacing: 0.01em;
+  min-height: 44px;
+  word-break: break-all;
 }
 
 .keys {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 11px;
+  gap: 10px;
+}
+
+.basic-keys {
+  margin-top: 10px;
+}
+
+.scientific-keys {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform: translateY(-8px);
+  pointer-events: none;
+  transition: max-height 280ms ease, opacity 220ms ease, transform 240ms ease;
+}
+
+.calculator[data-mode="scientific"] .scientific-keys {
+  max-height: 300px;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.calculator[data-mode="scientific"] .basic-keys {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.calculator[data-mode="scientific"] .key-eq {
+  grid-row: span 2;
+}
+
+.calculator[data-mode="scientific"] .key-zero {
+  grid-column: span 2;
 }
 
 .key {
   border: 0;
   border-radius: 14px;
-  padding: 14px 10px;
+  padding: 13px 10px;
   background: var(--key);
   color: var(--text);
   font-family: "Space Grotesk", sans-serif;
-  font-size: 1.05rem;
+  font-size: 1.02rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: inset 0 -2px 0 rgba(19, 34, 56, 0.09), 0 10px 16px rgba(19, 34, 56, 0.08);
+  box-shadow: inset 0 -2px 0 rgba(18, 35, 59, 0.08), 0 8px 14px rgba(18, 35, 59, 0.08);
   transition: transform 150ms ease, box-shadow 150ms ease, filter 150ms ease;
 }
 
 .key:hover {
   transform: translateY(-2px);
-  box-shadow: inset 0 -2px 0 rgba(19, 34, 56, 0.09), 0 13px 18px rgba(19, 34, 56, 0.12);
+  box-shadow: inset 0 -2px 0 rgba(18, 35, 59, 0.1), 0 11px 16px rgba(18, 35, 59, 0.12);
 }
 
 .key:active {
   transform: translateY(0);
-  filter: saturate(0.92);
+  filter: saturate(0.94);
 }
 
 .key-soft {
@@ -124,9 +202,15 @@ body {
   color: #0e7f63;
 }
 
+.key-sci {
+  background: var(--key-sci);
+  color: #4f2876;
+  font-size: 0.92rem;
+}
+
 .key-eq {
   background: linear-gradient(160deg, #13b88e, var(--key-eq));
-  color: #ffffff;
+  color: #fff;
 }
 
 .key-zero {
@@ -144,9 +228,23 @@ body {
   }
 }
 
+@media (max-width: 760px) {
+  .calculator[data-mode="scientific"] {
+    width: min(100%, 430px);
+  }
+
+  .calculator[data-mode="scientific"] .basic-keys {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .calculator[data-mode="scientific"] .key-eq {
+    grid-row: auto;
+  }
+}
+
 @media (max-width: 520px) {
   .scene {
-    padding: 16px;
+    padding: 14px;
   }
 
   .calculator {
@@ -154,8 +252,13 @@ body {
     padding: 16px;
   }
 
+  .calc-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
   .result {
-    font-size: 1.72rem;
+    font-size: 1.7rem;
   }
 
   .key {
