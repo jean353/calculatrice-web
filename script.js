@@ -25,6 +25,8 @@ const actionButtons = document.querySelectorAll("[data-action]");
 const historyListEl = document.querySelector("[data-history-list]");
 const historyDrawerEl = document.querySelector("[data-history-drawer]");
 const historyOverlayEl = document.querySelector(".history-overlay");
+const helpModalEl = document.querySelector("[data-help-modal]");
+const helpOverlayEl = document.querySelector(".help-overlay");
 
 let expression = "";
 let lastResult = "0";
@@ -36,6 +38,7 @@ let memoryValue = 0;
 let historyEntries = [];
 let copyFeedbackTimeout = null;
 let historyOpen = false;
+let helpOpen = false;
 
 const functionNames = ["sin", "cos", "tan", "asin", "acos", "atan", "log", "ln", "sqrt", "fact"];
 const TRIG_EPSILON = 1e-12;
@@ -309,6 +312,22 @@ function setHistoryOpen(nextOpen) {
   }
 
   document.body.classList.toggle("history-open", historyOpen);
+}
+
+function setHelpOpen(nextOpen) {
+  helpOpen = Boolean(nextOpen);
+
+  if (helpModalEl) {
+    helpModalEl.classList.toggle("is-open", helpOpen);
+    helpModalEl.setAttribute("aria-hidden", helpOpen ? "false" : "true");
+  }
+
+  if (helpOverlayEl) {
+    helpOverlayEl.classList.toggle("is-open", helpOpen);
+    helpOverlayEl.setAttribute("aria-hidden", helpOpen ? "false" : "true");
+  }
+
+  document.body.classList.toggle("help-open", helpOpen);
 }
 
 function clearAll() {
@@ -951,12 +970,28 @@ function executeAction(action, value, sourceButton) {
   }
 
   if (action === "history-toggle") {
+    if (!historyOpen) {
+      setHelpOpen(false);
+    }
     setHistoryOpen(!historyOpen);
     return;
   }
 
   if (action === "history-close") {
     setHistoryOpen(false);
+    return;
+  }
+
+  if (action === "help-toggle") {
+    if (!helpOpen) {
+      setHistoryOpen(false);
+    }
+    setHelpOpen(!helpOpen);
+    return;
+  }
+
+  if (action === "help-close") {
+    setHelpOpen(false);
     return;
   }
 
@@ -1113,6 +1148,13 @@ function handleKeyboardInput(event) {
 
   const { key } = event;
 
+  if (key === "F1" || key === "?") {
+    event.preventDefault();
+    setHistoryOpen(false);
+    setHelpOpen(true);
+    return;
+  }
+
   if (/^\d$/.test(key)) {
     event.preventDefault();
     executeAction("digit", key);
@@ -1145,7 +1187,9 @@ function handleKeyboardInput(event) {
 
   if (key === "Escape") {
     event.preventDefault();
-    if (historyOpen) {
+    if (helpOpen) {
+      setHelpOpen(false);
+    } else if (historyOpen) {
       setHistoryOpen(false);
     } else {
       executeAction("clear");
@@ -1283,3 +1327,4 @@ clearAll();
 initializeTheme();
 renderHistory();
 setHistoryOpen(false);
+setHelpOpen(false);

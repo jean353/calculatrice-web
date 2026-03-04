@@ -48,6 +48,11 @@
   --history-toggle-bg: #f4f8ff;
   --history-toggle-border: #d7e2f4;
   --history-toggle-text: #2f4868;
+  --help-toggle-bg: #f4f8ff;
+  --help-toggle-border: #d7e2f4;
+  --help-toggle-text: #2f4868;
+  --help-modal-bg: #f8fbff;
+  --help-modal-border: #d9e3ef;
   --overlay: rgba(9, 16, 27, 0.42);
   --shadow: 0 24px 60px rgba(18, 35, 59, 0.18);
   --shadow-scientific: 0 24px 70px rgba(67, 31, 107, 0.23);
@@ -102,6 +107,11 @@ body[data-theme="dark"] {
   --history-toggle-bg: #1e2d45;
   --history-toggle-border: #3b5274;
   --history-toggle-text: #d6e5ff;
+  --help-toggle-bg: #1e2d45;
+  --help-toggle-border: #3b5274;
+  --help-toggle-text: #d6e5ff;
+  --help-modal-bg: #1b2a41;
+  --help-modal-border: #3a4f70;
   --overlay: rgba(4, 8, 16, 0.62);
   --shadow: 0 28px 70px rgba(0, 0, 0, 0.45);
   --shadow-scientific: 0 28px 78px rgba(68, 31, 108, 0.45);
@@ -122,7 +132,8 @@ body {
     linear-gradient(160deg, var(--bg-top), var(--bg-bottom));
 }
 
-body.history-open {
+body.history-open,
+body.help-open {
   overflow: hidden;
 }
 
@@ -273,6 +284,22 @@ body.history-open {
   transition: transform 180ms ease, filter 180ms ease, border-color 180ms ease;
 }
 
+.help-toggle {
+  border: 1px solid var(--help-toggle-border);
+  border-radius: 999px;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: var(--help-toggle-bg);
+  color: var(--help-toggle-text);
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 180ms ease, filter 180ms ease, border-color 180ms ease;
+}
+
+.help-toggle:hover,
 .history-toggle:hover,
 .theme-toggle:hover {
   transform: translateY(-1px);
@@ -469,6 +496,109 @@ body.history-open {
   pointer-events: auto;
 }
 
+.help-overlay {
+  position: fixed;
+  inset: 0;
+  border: 0;
+  background: var(--overlay);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease;
+  z-index: 52;
+}
+
+.help-overlay.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.help-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -45%) scale(0.96);
+  width: min(650px, calc(100% - 28px));
+  max-height: 80dvh;
+  overflow: auto;
+  background: var(--help-modal-bg);
+  border: 1px solid var(--help-modal-border);
+  border-radius: 18px;
+  padding: 14px;
+  box-shadow: 0 22px 44px rgba(0, 0, 0, 0.28);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease, transform 220ms ease;
+  z-index: 53;
+}
+
+.help-modal.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.help-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.help-header h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.help-close {
+  border: 1px solid var(--memory-btn-border);
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: var(--memory-btn-bg);
+  color: var(--memory-btn-text);
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.help-content {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.help-block {
+  border: 1px solid var(--history-item-border);
+  border-radius: 12px;
+  background: var(--history-item-bg);
+  padding: 10px;
+}
+
+.help-block h3 {
+  margin: 0 0 8px;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.help-block ul {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+  font-size: 0.84rem;
+}
+
+kbd {
+  border: 1px solid var(--memory-btn-border);
+  border-radius: 6px;
+  padding: 1px 6px;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.74rem;
+  background: var(--memory-btn-bg);
+  color: var(--memory-btn-text);
+}
+
 .history-drawer {
   position: fixed;
   top: 0;
@@ -585,10 +715,12 @@ body.history-open {
 .mode-btn:focus-visible,
 .theme-toggle:focus-visible,
 .history-toggle:focus-visible,
+.help-toggle:focus-visible,
 .result-copy:focus-visible,
 .memory-btn:focus-visible,
 .history-clear:focus-visible,
 .history-close:focus-visible,
+.help-close:focus-visible,
 .history-item:focus-visible {
   outline: 3px solid var(--focus-ring);
   outline-offset: 2px;
@@ -643,5 +775,9 @@ body.history-open {
 
   .history-drawer {
     width: 100%;
+  }
+
+  .help-content {
+    grid-template-columns: 1fr;
   }
 }

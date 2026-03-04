@@ -22,6 +22,9 @@
             <button class="mode-btn is-active" type="button" data-mode-target="simple">Simple</button>
             <button class="mode-btn" type="button" data-mode-target="scientific">Scientifique</button>
           </div>
+          <button class="help-toggle" type="button" data-action="help-toggle" aria-label="Afficher l'aide des raccourcis clavier">
+            ?
+          </button>
           <button class="history-toggle" type="button" data-action="history-toggle" aria-label="Afficher l'historique">
             Historique
           </button>
@@ -105,6 +108,38 @@
       </div>
     </section>
   </main>
+  <button class="help-overlay" type="button" data-action="help-close" aria-label="Fermer l'aide"></button>
+  <section class="help-modal" aria-label="Aide des raccourcis clavier" aria-hidden="true" data-help-modal>
+    <div class="help-header">
+      <h2>Raccourcis clavier</h2>
+      <button class="help-close" type="button" data-action="help-close">Fermer</button>
+    </div>
+    <div class="help-content">
+      <div class="help-block">
+        <h3>Commun</h3>
+        <ul>
+          <li><kbd>0-9</kbd> : nombres</li>
+          <li><kbd>+ - * / ^</kbd> : operateurs</li>
+          <li><kbd>.</kbd> ou <kbd>,</kbd> : decimal</li>
+          <li><kbd>( )</kbd> : parentheses</li>
+          <li><kbd>Enter</kbd> ou <kbd>=</kbd> : calculer</li>
+          <li><kbd>Backspace</kbd> : DEL</li>
+          <li><kbd>Delete</kbd> : AC</li>
+        </ul>
+      </div>
+      <div class="help-block">
+        <h3>Scientifique</h3>
+        <ul>
+          <li><kbd>S</kbd> sin, <kbd>C</kbd> cos, <kbd>T</kbd> tan</li>
+          <li><kbd>A</kbd> asin, <kbd>B</kbd> acos, <kbd>N</kbd> atan</li>
+          <li><kbd>L</kbd> ln, <kbd>G</kbd> log, <kbd>R</kbd> sqrt</li>
+          <li><kbd>P</kbd> pi, <kbd>E</kbd> e, <kbd>I</kbd> 1/x</li>
+          <li><kbd>Q</kbd> x², <kbd>!</kbd> n!, <kbd>H</kbd> nCr, <kbd>J</kbd> nPr</li>
+          <li><kbd>D</kbd> : bascule DEG/RAD</li>
+        </ul>
+      </div>
+    </div>
+  </section>
   <button class="history-overlay" type="button" data-action="history-close" aria-label="Fermer l'historique"></button>
   <aside class="history-drawer" aria-label="Historique des calculs" aria-hidden="true" data-history-drawer>
     <div class="history-header">
