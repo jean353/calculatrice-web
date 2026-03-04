@@ -502,6 +502,9 @@ function applyFunction(name, value) {
   }
   if (name === "tan") {
     const angle = angleMode === "DEG" ? (value * Math.PI) / 180 : value;
+    if (Math.abs(Math.cos(angle)) < TRIG_EPSILON) {
+      throw new Error("Domaine invalide");
+    }
     return normalizeTrigValue(Math.tan(angle));
   }
   if (name === "log") {
@@ -677,6 +680,11 @@ function handleAction(button) {
 
   if (action === "func") {
     appendFunction(value);
+    return;
+  }
+
+  if (action === "sqrt") {
+    appendFunction("sqrt");
     return;
   }
 
