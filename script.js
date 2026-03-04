@@ -19,7 +19,8 @@ const resultEl = document.querySelector(".result");
 const calculatorEl = document.querySelector(".calculator");
 const modeButtons = document.querySelectorAll(".mode-btn");
 const themeToggleButton = document.querySelector("[data-theme-toggle]");
-const keys = document.querySelectorAll(".key");
+const actionButtons = document.querySelectorAll("[data-action]");
+const historyListEl = document.querySelector("[data-history-list]");
 
 let expression = "";
 let lastResult = "0";
@@ -27,10 +28,13 @@ let justCalculated = false;
 let scientificMode = false;
 let angleMode = "DEG";
 let theme = "light";
+let memoryValue = 0;
+let historyEntries = [];
 
 const functionNames = ["sin", "cos", "tan", "log", "ln", "sqrt"];
 const TRIG_EPSILON = 1e-12;
 const THEME_STORAGE_KEY = "calculator-theme";
+const MAX_HISTORY_ENTRIES = 16;
 
 function isOperator(token) {
   return token === "+" || token === "-" || token === "*" || token === "/" || token === "^";
@@ -110,6 +114,91 @@ function normalizeForDisplay(expr) {
 function updateDisplay(resultText) {
   expressionEl.textContent = normalizeForDisplay(expression);
   resultEl.textContent = resultText;
+}
+
+function parseDisplayNumber() {
+  const value = Number(lastResult);
+  return Number.isFinite(value) ? value : null;
+}
+
+function formatMemoryValue(value) {
+  try {
+    return formatResult(value);
+  } catch (error) {
+    return "0";
+  }
+}
+
+function appendLiteral(literal) {
+  if (!literal) {
+    return;
+  }
+
+  if (justCalculated) {
+    expression = "";
+    justCalculated = false;
+  }
+
+  const last = expression[expression.length - 1];
+  if (expression && !isOperator(last) && last !== "(") {
+    expression += "*";
+  }
+
+  if (literal.startsWith("-") && expression && !isOperator(expression[expression.length - 1]) && expression[expression.length - 1] !== "(") {
+    expression += `(${literal})`;
+  } else {
+    expression += literal;
+  }
+
+  updateDisplay(lastResult);
+}
+
+function renderHistory() {
+  if (!historyListEl) {
+    return;
+  }
+
+  historyListEl.textContent = "";
+
+  if (historyEntries.length === 0) {
+    const emptyItem = document.createElement("li");
+    const emptyText = document.createElement("p");
+    emptyText.className = "history-empty";
+    emptyText.textContent = "Aucun calcul pour le moment.";
+    emptyItem.appendChild(emptyText);
+    historyListEl.appendChild(emptyItem);
+    return;
+  }
+
+  historyEntries.forEach((entry, index) => {
+    const item = document.createElement("li");
+    const button = document.createElement("button");
+    const exp = document.createElement("span");
+    const res = document.createElement("span");
+
+    button.type = "button";
+    button.className = "history-item";
+    button.setAttribute("data-history-index", String(index));
+
+    exp.className = "history-item-exp";
+    exp.textContent = entry.expression;
+    res.className = "history-item-res";
+    res.textContent = `= ${entry.result}`;
+
+    button.appendChild(exp);
+    button.appendChild(res);
+    item.appendChild(button);
+    historyListEl.appendChild(item);
+  });
+}
+
+function addHistoryEntry(rawExpression, rawResult) {
+  const normalizedExpression = normalizeForDisplay(rawExpression) || "0";
+  historyEntries = [
+    { expression: normalizedExpression, result: rawResult },
+    ...historyEntries
+  ].slice(0, MAX_HISTORY_ENTRIES);
+  renderHistory();
 }
 
 function clearAll() {
@@ -645,12 +734,14 @@ function calculate() {
   }
 
   try {
+    const expressionBeforeCalc = expression;
     const value = evaluateExpression(expression);
     const formatted = formatResult(value);
     expression = formatted;
     lastResult = formatted;
     justCalculated = true;
     updateDisplay(formatted);
+    addHistoryEntry(expressionBeforeCalc, formatted);
   } catch (error) {
     expression = "";
     lastResult = "Erreur";
@@ -699,6 +790,38 @@ function executeAction(action, value, sourceButton) {
 
   if (action === "clear") {
     clearAll();
+    return;
+  }
+
+  if (action === "history-clear") {
+    historyEntries = [];
+    renderHistory();
+    return;
+  }
+
+  if (action === "memory-clear") {
+    memoryValue = 0;
+    return;
+  }
+
+  if (action === "memory-recall") {
+    appendLiteral(formatMemoryValue(memoryValue));
+    return;
+  }
+
+  if (action === "memory-add") {
+    const displayedValue = parseDisplayNumber();
+    if (displayedValue !== null) {
+      memoryValue += displayedValue;
+    }
+    return;
+  }
+
+  if (action === "memory-subtract") {
+    const displayedValue = parseDisplayNumber();
+    if (displayedValue !== null) {
+      memoryValue -= displayedValue;
+    }
     return;
   }
 
@@ -909,14 +1032,35 @@ if (themeToggleButton) {
   });
 }
 
-keys.forEach((key) => {
-  key.addEventListener("click", () => {
-    handleAction(key);
+actionButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    handleAction(button);
   });
 });
+
+if (historyListEl) {
+  historyListEl.addEventListener("click", (event) => {
+    const target = event.target.closest("[data-history-index]");
+    if (!target) {
+      return;
+    }
+
+    const index = Number(target.getAttribute("data-history-index"));
+    const selectedEntry = historyEntries[index];
+    if (!selectedEntry) {
+      return;
+    }
+
+    expression = selectedEntry.result;
+    lastResult = selectedEntry.result;
+    justCalculated = true;
+    updateDisplay(lastResult);
+  });
+}
 
 document.addEventListener("keydown", handleKeyboardInput);
 
 setMode("simple");
 clearAll();
 initializeTheme();
+renderHistory();

@@ -33,6 +33,13 @@
         <p class="result">0</p>
       </div>
 
+      <div class="memory-bar" aria-label="Mémoire">
+        <button class="memory-btn" type="button" data-action="memory-clear">MC</button>
+        <button class="memory-btn" type="button" data-action="memory-recall">MR</button>
+        <button class="memory-btn" type="button" data-action="memory-add">M+</button>
+        <button class="memory-btn" type="button" data-action="memory-subtract">M-</button>
+      </div>
+
       <div class="keys scientific-keys" aria-label="Touches scientifiques">
         <button class="key key-sci" type="button" data-action="func" data-value="sin">sin</button>
         <button class="key key-sci" type="button" data-action="func" data-value="cos">cos</button>
@@ -80,6 +87,14 @@
         <button class="key" type="button" data-action="dot">.</button>
         <button class="key key-eq" type="button" data-action="equals">=</button>
       </div>
+
+      <section class="history-panel" aria-label="Historique des calculs">
+        <div class="history-header">
+          <p>Historique</p>
+          <button class="history-clear" type="button" data-action="history-clear">Vider</button>
+        </div>
+        <ul class="history-list" data-history-list></ul>
+      </section>
     </section>
   </main>
 
