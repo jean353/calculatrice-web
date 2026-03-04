@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculatrice Web</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="scene">
+    <section class="calculator" aria-label="Calculatrice simple">
+      <header class="calc-header">
+        <p class="calc-kicker">Calculatrice</p>
+        <h1>Simple, rapide, claire</h1>
+      </header>
+
+      <div class="display-wrap" role="status" aria-live="polite">
+        <p class="expression">12 + 8</p>
+        <p class="result">20</p>
+      </div>
+
+      <div class="keys" aria-label="Touches de calculatrice">
+        <button class="key key-soft" type="button">AC</button>
+        <button class="key key-soft" type="button">+/-</button>
+        <button class="key key-soft" type="button">%</button>
+        <button class="key key-op" type="button">/</button>
+
+        <button class="key" type="button">7</button>
+        <button class="key" type="button">8</button>
+        <button class="key" type="button">9</button>
+        <button class="key key-op" type="button">*</button>
+
+        <button class="key" type="button">4</button>
+        <button class="key" type="button">5</button>
+        <button class="key" type="button">6</button>
+        <button class="key key-op" type="button">-</button>
+
+        <button class="key" type="button">1</button>
+        <button class="key" type="button">2</button>
+        <button class="key" type="button">3</button>
+        <button class="key key-op" type="button">+</button>
+
+        <button class="key key-zero" type="button">0</button>
+        <button class="key" type="button">.</button>
+        <button class="key key-eq" type="button">=</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
