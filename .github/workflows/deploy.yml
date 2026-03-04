@@ -21,4 +21,5 @@ jobs:
 
       - name: Deploy to S3
         run: |
-          aws s3 sync ../../ s3://NOM-DE-TON-BUCKET --exclude ".git*" --exclude ".github*"
+          # On utilise "." pour dire "tout le contenu du dossier actuel"
+          aws s3 sync . s3://calculatrice-web-2026 --exclude ".git*" --exclude ".github*"
